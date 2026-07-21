@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog · Angara Kevin</title>
+
+    <!-- Font & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #faf9f8;
+            color: #1d1d1f;
+            line-height: 1.6;
+            padding: 0 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== NAVBAR (reusable component — placeholder) ===== */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            flex-wrap: wrap;
+            gap: 12px 20px;
+        }
+
+        .navbar .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #1d1d1f;
+            text-decoration: none;
+        }
+
+        .navbar .brand span {
+            color: #8b8b8f;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            list-style: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1d1d1f;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #1d1d1f;
+            transition: width 0.25s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: #000;
+        }
+
+        .nav-links a:hover {
+            color: #000;
+        }
+
+        /* ===== BLOG HEADER ===== */
+        .blog-header {
+            padding: 48px 0 32px;
+            text-align: center;
+        }
+
+        .blog-header h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .blog-header h1 span {
+            background: linear-gradient(135deg, #1d1d1f 40%, #6b6b70);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .blog-header p {
+            margin-top: 8px;
+            color: #6e6e73;
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* ===== CATEGORY TABS ===== */
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 12px;
+            margin: 8px 0 48px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .category-tabs .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6e6e73;
+            cursor: pointer;
+            border-radius: 100px;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .category-tabs .tab-btn:hover {
+            color: #1d1d1f;
+            background: #f0efed;
+        }
+
+        .category-tabs .tab-btn.active {
+            color: #1d1d1f;
+            background: #e8e7e4;
+            font-weight: 600;
+        }
+
+        .category-tabs .tab-btn .count {
+            display: inline-block;
+            background: #e8e7e4;
+            color: #6e6e73;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0 8px;
+            border-radius: 20px;
+            margin-left: 6px;
+            line-height: 1.6;
+        }
+
+        .category-tabs .tab-btn.active .count {
+            background: #d0cfcc;
+            color: #1d1d1f;
+        }
+
+        /* ===== ARTICLE GRID ===== */
+        .article-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 32px 28px;
+            margin-bottom: 64px;
+        }
+
+        /* ===== ARTICLE CARD ===== */
+        .article-card {
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .article-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+            border-color: rgba(0, 0, 0, 0.06);
+        }
+
+        .article-card .card-img {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: #f0efed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            color: #b0afab;
+            transition: background 0.3s;
+            overflow: hidden;
+        }
+
+        .article-card:hover .card-img {
+            background: #e8e7e4;
+        }
+
+        .article-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* fallback icon jika tidak ada gambar */
+        .card-img .img-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: #f0efed;
+            color: #b0afab;
+            font-size: 2.8rem;
+        }
+
+        .card-img .img-placeholder i {
+            font-size: 3.2rem;
+            margin-bottom: 4px;
+        }
+
+        .card-img .img-placeholder span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #b0afab;
+        }
+
+        .card-body {
+            padding: 20px 22px 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-body .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: #8b8b8f;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .card-body .card-meta .cat-badge {
+            display: inline-block;
+            background: #f0efed;
+            padding: 0 12px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #4a4a4d;
+            line-height: 1.9;
+        }
+
+        .card-body .card-meta .cat-badge.film {
+            background: #e8e0f0;
+            color: #5b3b7a;
+        }
+        .card-body .card-meta .cat-badge.daily {
+            background: #e0f0e8;
+            color: #2a6b4f;
+        }
+        .card-body .card-meta .cat-badge.hobby {
+            background: #f0ece0;
+            color: #7a653b;
+        }
+        .card-body .card-meta .cat-badge.random {
+            background: #f0e0e0;
+            color: #7a3b3b;
+        }
+
+        .card-body .card-meta .date {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-body .card-meta .date i {
+            font-size: 0.75rem;
+        }
+
+        .card-body .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.35;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+            transition: color 0.2s;
+        }
+
+        .article-card:hover .card-title {
+            color: #000;
+        }
+
+        .card-body .card-excerpt {
+            font-size: 0.92rem;
+            color: #6e6e73;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-body .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            margin-top: auto;
+        }
+
+        .card-body .card-footer .comments {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #8b8b8f;
+        }
+
+        .card-body .card-footer .comments i {
+            font-size: 0.9rem;
+        }
+
+        .card-body .card-footer .read-more {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1d1d1f;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.25s ease;
+        }
+
+        .article-card:hover .card-footer .read-more {
+            gap: 10px;
+        }
+
+        .card-body .card-footer .read-more i {
+            font-size: 0.75rem;
+            transition: transform 0.2s;
+        }
+
+        .article-card:hover .card-footer .read-more i {
+            transform: translateX(3px);
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b8b8f;
+            display: none;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 1.05rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 16px 0 12px;
+            }
+
+            .nav-links {
+                gap: 18px;
+                font-size: 0.9rem;
+                flex-wrap: wrap;
+            }
+
+            .blog-header h1 {
+                font-size: 2.4rem;
+            }
+
+            .blog-header {
+                padding: 32px 0 24px;
+            }
+
+            .category-tabs {
+                gap: 6px 8px;
+                margin-bottom: 32px;
+            }
+
+            .category-tabs .tab-btn {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
+
+            .article-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .card-body {
+                padding: 16px 18px 18px;
+            }
+
+            .card-body .card-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0 12px;
+            }
+
+            .container {
+                padding: 0 8px;
+            }
+
+            .blog-header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                gap: 12px;
+                font-size: 0.8rem;
+            }
+
+            .navbar .brand {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ===== ANIMASI MASUK ===== */
+        .article-card {
+            opacity: 0;
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        .article-card:nth-child(1) {
+            animation-delay: 0.02s;
+        }
+        .article-card:nth-child(2) {
+            animation-delay: 0.06s;
+        }
+        .article-card:nth-child(3) {
+            animation-delay: 0.10s;
+        }
+        .article-card:nth-child(4) {
+            animation-delay: 0.14s;
+        }
+        .article-card:nth-child(5) {
+            animation-delay: 0.18s;
+        }
+        .article-card:nth-child(6) {
+            animation-delay: 0.22s;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* filter transisi */
+        .article-grid {
+            transition: opacity 0.2s ease;
+        }
+
+        .article-grid.filtering {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== NAVBAR (reusable component – placeholder) ===== -->
+        <nav class="navbar">
+            <a href="#" class="brand">Angara <span>Kevin</span></a>
+            <ul class="nav-links">
+                <li><a href="#">About</a></li>
+                <li><a href="#" class="active">Blog</a></li>
+                <li><a href="#">Books</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Others</a></li>
+            </ul>
+        </nav>
+
+        <!-- ===== BLOG HEADER ===== -->
+        <header class="blog-header">
+            <h1><span>Blog</span></h1>
+            <p>Catatan harian, esai, dan obrolan ringan seputar film, hobi &amp; random</p>
+        </header>
+
+        <!-- ===== CATEGORY TABS ===== -->
+        <div class="category-tabs" id="categoryTabs">
+            <button class="tab-btn active" data-category="all">
+                Semua <span class="count">6</span>
+            </button>
+            <button class="tab-btn" data-category="film">
+                <i class="fas fa-film" style="margin-right:4px;"></i> Film <span class="count">2</span>
+            </button>
+            <button class="tab-btn" data-category="daily">
+                <i class="fas fa-pen-fancy" style="margin-right:4px;"></i> Daily Write <span class="count">2</span>
+            </button>
+            <button class="tab-btn" data-category="hobby">
+                <i class="fas fa-camera" style="margin-right:4px;"></i> Hobi <span class="count">1</span>
+            </button>
+            <button class="tab-btn" data-category="random">
+                <i class="fas fa-comment-dots" style="margin-right:4px;"></i> Random <span class="count">1</span>
+            </button>
+        </div>
+
+        <!-- ===== ARTICLE GRID ===== -->
+        <div class="article-grid" id="articleGrid">
+
+            <!-- Card 1 — Film -->
+            <a href="#" class="article-card" data-category="film">
+                <div class="card-img">
+                    <div class="img-placeholder" style="background:#e8e0f0;color:#5b3b7a;">
+                        <i class="fas fa-film"></i>
+                        <span>Film</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-meta">
+                        <span class="cat-badge film">Film</span>
+                        <span class="date"><i class="far fa-calendar-alt"></i> 11 Agt 2022</span>
+                    </div>
+                    <h3 class="card-title">Lagi Bener — Menonton Ulang Klasik</h3>
+                    <p class="card-excerpt">
+                        Sebuah refleksi tentang menonton ulang film-film lama yang ternyata terasa
+                        berbeda di usia sekarang. Beda perspektif, beda makna.
+                    </p>
+                    <div class="card-footer">
+                        <span class="comments"><i class="far fa-comment"></i> 32</span>
+                        <span class="read-more">Baca <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 2 — Daily -->
+            <a href="#" class="article-card" data-category="daily">
+                <div class="card-img">
+                    <div class="img-placeholder" style="background:#e0f0e8;color:#2a6b4f;">
+                        <i class="fas fa-envelope"></i>
+                        <span>Daily</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-meta">
+                        <span class="cat-badge daily">Daily Write</span>
+                        <span class="date"><i class="far fa-calendar-alt"></i> 8 Des 2021</span>
+                    </div>
+                    <h3 class="card-title">Kotak Surat — Surat untuk Diri Sendiri</h3>
+                    <p class="card-excerpt">
+                        Menulis surat untuk diri sendiri di masa lalu dan masa depan. Sebuah latihan
+                        kejujuran yang ternyata lebih sulit dari yang dibayangkan.
+                    </p>
+                    <div class="card-footer">
+                        <span class="comments"><i class="far fa-comment"></i> 48</span>
+                        <span class="read-more">Baca <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 3 — Daily -->
+            <a href="#" class="article-card" data-category="daily">
+                <div class="card-img">
+                    <div class="img-placeholder" style="background:#e0f0e8;color:#2a6b4f;">
+                        <i class="fas fa-sun"></i>
+                        <span>Daily</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-meta">
+                        <span class="cat-badge daily">Daily Write</span>
+                        <span class="date"><i class="far fa-calendar-alt"></i> 7 Des 2021</span>
+                    </div>
+                    <h3 class="card-title">Daily Life — Rutinitas yang Membahagiakan</h3>
+                    <p class="card-excerpt">
+                        Tentang menemukan kebahagiaan dalam hal-hal kecil: kopi pagi, jalan sore,
+                        dan obrolan ringan dengan orang terdekat.
+                    </p>
+                    <div class="card-footer">
+                        <span class="comments"><i class="far fa-comment"></i> 11</span>
+                        <span class="read-more">Baca <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 4 — Hobby -->
+            <a href="#" class="article-card" data-category="hobby">
+                <div class="card-img">
+                    <div class="img-placeholder" style="background:#f0ece0;color:#7a653b;">
+                        <i class="fas fa-camera-retro"></i>
+                        <span>Hobi</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-meta">
+                        <span class="cat-badge hobby">Hobi</span>
+                        <span class="date"><i class="far fa-calendar-alt"></i> 30 Nov 2021</span>
+                    </div>
+                    <h3 class="card-title">Jalan-Jalan — Menyusuri Gang Sempit</h3>
+                    <p class="card-excerpt">
+                        Fotografi jalanan di gang-gang kecil kota. Setiap sudut menyimpan cerita
+                        yang tak pernah terucapkan.
+                    </p>
+                    <div class="card-footer">
+                        <span class="comments"><i class="far fa-comment"></i> 24</span>
+                        <span class="read-more">Baca <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 5 — Random -->
+            <a href="#" class="article-card" data-category="random">
+                <div class="card-img">
+                    <div class="img-placeholder" style="background:#f0e0e0;color:#7a3b3b;">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <span>Random</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-meta">
+                        <span class="cat-badge random">Random</span>
+                        <span class="date"><i class="far fa-calendar-alt"></i> 15 Okt 2021</span>
+                    </div>
+                    <h3 class="card-title">Eseni Hobi — Ketika Hobi Jadi Obsesi</h3>
+                    <p class="card-excerpt">
+                        Dari sekadar iseng hingga menjadi sesuatu yang menguras waktu dan pikiran.
+                        Batas antara hobi dan obsesi ternyata tipis.
+                    </p>
+                    <div class="card-footer">
+                        <span class="comments"><i class="far fa-comment"></i> 19</span>
+                        <span class="read-more">Baca <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 6 — Film -->
+            <a href="#" class="article-card" data-category="film">
+                <div class="card-img">
+                    <div class="img-placeholder" style="background:#e8e0f0;color:#5b3b7a;">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Film</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-meta">
+                        <span class="cat-badge film">Film</span>
+                        <span class="date"><i class="far fa-calendar-alt"></i> 2 Sep 2021</span>
+                    </div>
+                    <h3 class="card-title">Day30 — Refleksi 30 Hari Menulis</h3>
+                    <p class="card-excerpt">
+                        Hari terakhir dari tantangan menulis 30 hari. Pelajaran yang didapat
+                        ternyata lebih banyak dari yang diperkirakan.
+                    </p>
+                    <div class="card-footer">
+                        <span class="comments"><i class="far fa-comment"></i> 42</span>
+                        <span class="read-more">Baca <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- ===== EMPTY STATE (hidden by default) ===== -->
+        <div class="empty-state" id="emptyState">
+            <i class="far fa-folder-open"></i>
+            <p>Belum ada tulisan di kategori ini.</p>
+        </div>
+
+    </div>
+
+    <!-- ===== JAVASCRIPT — FILTER KATEGORI ===== -->
+<script>
+    (function() {
+        // Cast NodeListOf<Element> menjadi NodeListOf<HTMLElement>
+        const tabs = document.querySelectorAll('.tab-btn') as NodeListOf<HTMLElement>;
+        const cards = document.querySelectorAll('.article-card') as NodeListOf<HTMLElement>;
+        const grid = document.getElementById('articleGrid') as HTMLElement | null;
+        const emptyState = document.getElementById('emptyState') as HTMLElement | null;
+
+        // Validasi elemen dasar untuk mencegah error script crash dan memperjelas null-check ke TS
+        if (!grid || !emptyState) return;
+
+        function filterArticles(category: string) {
+            let visibleCount = 0;
+
+            // Pastikan grid tidak null (sudah divalidasi di atas, tapi TS butuh kepastian jika scope berbeda)
+            grid!.classList.add('filtering');
+
+            cards.forEach(card => {
+                const cardCat = card.dataset.category;
+                const shouldShow = (category === 'all' || cardCat === category);
+
+                if (shouldShow) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                    
+                    // PERBAIKAN: Paksa reflow agar animasi re-trigger bekerja valid di semua browser
+                    card.style.animation = 'none';
+                    card.offsetWidth; // Membaca properti ini memaksa browser merender ulang perubahan
+                    card.style.animation = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // PERBAIKAN: Tampilkan empty state murni berdasarkan jumlah kartu yang terlihat
+            if (visibleCount === 0) {
+                emptyState!.style.display = 'block';
+            } else {
+                emptyState!.style.display = 'none';
+            }
+
+            // Hapus class filtering setelah transisi selesai
+            setTimeout(() => {
+                grid!.classList.remove('filtering');
+            }, 250);
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                // Hindari penggunaan 'this' implisit dengan mendefinisikan target secara eksplisit
+                const currentTab = e.currentTarget as HTMLElement;
+
+                // Jangan jalankan ulang fungsi jika tab yang diklik sudah aktif (efisiensi)
+                if (currentTab.classList.contains('active')) return;
+
+                tabs.forEach(t => t.classList.remove('active'));
+                currentTab.classList.add('active');
+
+                const category = currentTab.dataset.category || 'all';
+                filterArticles(category);
+            });
+        });
+
+        // Inisialisasi awal
+        filterArticles('all');
+    })();
+</script>
+
+</body>
+</html>
